@@ -1,0 +1,303 @@
+<!-- blog.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blog Page</title>
+    <style>
+        /* Navigation and Common Styles */
+        .navbar {
+            background-color: #333;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+
+        .nav-link {
+            color: white;
+            text-decoration: none;
+            padding: 10px 15px;
+            margin: 0 5px;
+            cursor: pointer;
+        }
+
+        .nav-link:hover {
+            background-color: #555;
+        }
+
+        .active {
+            background-color: #4CAF50;
+        }
+
+        /* Blog Specific Styles */
+        .blog-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .blog-post {
+            background: white;
+            padding: 20px;
+            margin-bottom: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .blog-title {
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .blog-meta {
+            color: #666;
+            font-size: 0.9em;
+            margin-bottom: 15px;
+        }
+
+        .blog-content {
+            line-height: 1.6;
+        }
+
+        .create-post-btn {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-bottom: 20px;
+        }
+
+        .create-post-btn:hover {
+            background-color: #45a049;
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 15% auto;
+            padding: 20px;
+            width: 70%;
+            max-width: 800px;
+            border-radius: 8px;
+        }
+
+        .modal-content input,
+        .modal-content textarea {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        .modal-content textarea {
+            height: 200px;
+        }
+
+        .close-btn {
+            float: right;
+            cursor: pointer;
+            font-size: 24px;
+        }
+    </style>
+    <script src="script.js"></script>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <a href="index.html" class="nav-link">Home</a>
+        <a href="documents.html" class="nav-link">Documents</a>
+        <a href="blog.html" class="nav-link active">Blog</a>
+        <a href="about.html" class="nav-link">About</a>
+        <a href="contact.html" class="nav-link">Contact</a>
+    </nav>
+
+    <!-- Blog Content -->
+    <div class="blog-container">
+        <button class="create-post-btn" onclick="openCreatePostModal()">Create New Post</button>
+        
+        <div id="blogPosts">
+            <!-- Blog posts will be loaded here dynamically -->
+        </div>
+    </div>
+
+    <!-- Create Post Modal -->
+    <div id="createPostModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeCreatePostModal()">&times;</span>
+            <h2>Create New Blog Post</h2>
+            <form id="blogPostForm" onsubmit="createPost(event)">
+                <input type="text" id="postTitle" placeholder="Post Title" required>
+                <input type="text" id="postAuthor" placeholder="Author Name" required>
+                <textarea id="postContent" placeholder="Write your post content here..." required></textarea>
+                <button type="submit" class="create-post-btn">Publish Post</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Load blog posts when page loads
+        document.addEventListener('DOMContentLoaded', loadBlogPosts);
+
+        // Function to load blog posts
+        async function loadBlogPosts() {
+            try {
+                const response = await fetch('get_posts.php');
+                const data = await response.json();
+
+                if (data.success) {
+                    const blogPostsContainer = document.getElementById('blogPosts');
+                    blogPostsContainer.innerHTML = data.posts.map(post => `
+                        <div class="blog-post">
+                            <h2 class="blog-title">${escapeHtml(post.title)}</h2>
+                            <div class="blog-meta">
+                                <span>By ${escapeHtml(post.author)}</span>
+                                <span> • </span>
+                                <span>${new Date(post.created_at).toLocaleDateString()}</span>
+                            </div>
+                            <div class="blog-content">
+                                ${escapeHtml(post.content)}
+                            </div>
+                        </div>
+                    `).join('');
+                } else {
+                    console.error('Error loading posts:', data.message);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+
+        // Modal functions
+        function openCreatePostModal() {
+            document.getElementById('createPostModal').style.display = 'block';
+        }
+
+        function closeCreatePostModal() {
+            document.getElementById('createPostModal').style.display = 'none';
+            document.getElementById('blogPostForm').reset();
+        }
+
+        // Create new post
+        async function createPost(event) {
+            event.preventDefault();
+
+            const formData = new FormData();
+            formData.append('title', document.getElementById('postTitle').value);
+            formData.append('author', document.getElementById('postAuthor').value);
+            formData.append('content', document.getElementById('postContent').value);
+
+            try {
+                const response = await fetch('add_post.php', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    closeCreatePostModal();
+                    loadBlogPosts();
+                    alert('Post created successfully!');
+                } else {
+                    alert('Error creating post: ' + data.message);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('An error occurred while creating the post');
+            }
+        }
+
+        // Helper function to escape HTML
+        function escapeHtml(unsafe) {
+            return unsafe
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+
+        // Navigation highlight
+        function highlightCurrentPage() {
+            const currentPage = window.location.pathname.split('/').pop();
+            const navLinks = document.querySelectorAll('.nav-link');
+            
+            navLinks.forEach(link => {
+                if (link.getAttribute('href') === currentPage) {
+                    link.classList.add('active');
+                } else {
+                    link.classList.remove('active');
+                }
+            });
+        }
+        
+    </script>
+</body>
+</html>
+<!-- blog.html -->
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blog</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo">MyBlog</a>
+            <ul class="nav-menu">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="blog.html" class="active">Blog</a></li>
+                <li><a href="#about">About</a></li>
+                <li><a href="#contact">Contact</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container">
+        <h1>Blog Posts</h1>
+        <div class="blog-form">
+            <form id="postForm" action="add_post.php" method="POST">
+                <div class="form-group">
+                    <label for="title">Post Title</label>
+                    <input type="text" id="title" name="title" placeholder="Enter post title" required>
+                </div>
+                <div class="form-group">
+                    <label for="author">Author Name</label>
+                    <input type="text" id="author" name="author" placeholder="Enter author name" required>
+                </div>
+                <div class="form-group">
+                    <label for="content">Post Content</label>
+                    <textarea id="content" name="content" placeholder="Write your post content here..." required></textarea>
+                </div>
+                <button type="submit" class="submit-btn">Publish Post</button>
+            </form>
+        </div>
+
+        <div id="postList" class="post-list">
+            Posts will be loaded here dynamically -->
+        <!-- </div>
+    </div>
+
+    <footer class="footer">
+        <p>&copy; 2024 MyBlog. All rights reserved.</p>
+    </footer>
+
+    <script src="blog.js"></script>
+</body>
+</html> -->

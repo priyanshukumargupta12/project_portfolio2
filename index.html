@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portfolio</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* Your existing styles */
+        .navbar {
+            background-color: #3e44f7;
+            padding: 15px;
+        }
+
+        .nav-link {
+            color: rgb(2, 6, 12);
+            text-decoration: none;
+            padding: 10px 15px;
+            margin: 0 5px;
+            cursor: pointer;
+        }
+
+        .nav-link:hover {
+            background-color: #555;
+        }
+
+        .active {
+            background-color: #4CAF50;
+        }
+
+        /* Added styles for blog preview */
+        .blog-preview {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+        }
+
+        .blog-preview-item {
+            background: white;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .read-more {
+            color: #4CAF50;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .read-more:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav class="navbar">
+            <a href="index.html" class="nav-link active">Home</a>
+            <a href="documents.html" class="nav-link">Documents</a>
+            <a href="blog.html" class="nav-link">Blog</a>
+            <a href="about.html" class="nav-link">About</a>
+            <a href="contact.html" class="nav-link">Contact</a>
+        </nav>
+    
+        <div class="content">
+            <h1>Welcome to Our Website</h1>
+            
+            <!-- Blog Preview Section -->
+            <div class="blog-preview">
+                <h2>Latest Blog Posts</h2>
+                <div id="latestPosts">
+                    <!-- Latest posts will be loaded here -->
+                </div>
+            </div>
+        </div>
+    
+        <script>
+            // Load latest blog posts
+            async function loadLatestPosts() {
+                try {
+                    const response = await fetch('get_latest_posts.php');
+                    const data = await response.json();
+    
+                    if (data.success) {
+                        const postsContainer = document.getElementById('latestPosts');
+                        // Display only the latest 3 posts
+                        const latestPosts = data.posts.slice(0, 3);
+                        
+                        postsContainer.innerHTML = latestPosts.map(post => `
+                            <div class="blog-preview-item">
+                                <h3>${escapeHtml(post.title)}</h3>
+                                <p>${escapeHtml(post.content.substring(0, 150))}...</p>
+                                <a href="blog.html?post=${post.id}" class="read-more">Read More</a>
+                            </div>
+                        `).join('');
+                    }
+                } catch (error) {
+                    console.error('Error loading latest posts:', error);
+                }
+            }
+    
+            // Helper function to escape HTML
+            function escapeHtml(unsafe) {
+                return unsafe
+                    .replace(/&/g, "&amp;")
+                    .replace(/</g, "&lt;")
+                    .replace(/>/g, "&gt;")
+                    .replace(/"/g, "&quot;")
+                    .replace(/'/g, "&#039;");
+            }
+    
+            // Load latest posts when page loads
+            document.addEventListener('DOMContentLoaded', loadLatestPosts);
+        </script>
+        <!-- <nav class="navbar">
+            <div class="logo" id="logo">
+                <img src="logo.png" alt="Logo" />
+            </div>
+            <div class="menu-toggle" id="mobile-menu">
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+            </div>
+            <header>
+                <h1>Your Portfolio</h1>
+                <button id="theme-toggle" aria-label="Toggle dark/light theme">
+                    <img id="theme-icon" src="sun-icon.png" alt="Light Theme Icon">
+                </button>
+            </header>
+           
+            <ul class="nav-list">
+                <li><a href="#">Home</a></li>
+                <li><a href="#">About</a></li>
+                <li><a href="#">Services</a></li>
+                <li><a href="#">Skills</a></li>
+                <li><a href="#">Projects</a></li>
+                <li><a href="Blog.html">Blogs</a></li>
+                <li><a href="blog.html" class="active">Blog</a></li>
+                <li><a href="#">Contact</a></li>
+            </ul>
+        </nav> -->
+    </header>
+    
+    <section class="intro">
+        <div class="intro-text">
+            <h1>Hello, It's Me<br><span>Priyanshu Kumar Gupta</span><br>And I'm a <span class="typing-animation">Web Dev</span></h1>
+            <p>Dedicated and motivated Information Technlogy student with a passion for 
+                leveraging emerging technologies to solve complex problems. To work with 
+                an organization where I can learn new skills and increase my abilities for 
+                organizational goals as well as myself.</p>
+            <div class="social-links">
+                <a href="#"><i class="fab fa-whatsapp"></i></a>
+                <a href="https://www.instagram.com/luscifer_12?igsh=MWs1a2tpcTg3M2oyYw=="><i class="fab fa-instagram"></i></a>
+                <a href="#"><i class="fab fa-facebook"></i></a>
+                <a href="#"><i class="fab fa-tiktok"></i></a>
+            </div>
+            <a href="#" class="btn">More About Me</a>
+        </div>
+        <div class="intro-image">
+            <img src="/newsletter.png.jpg" alt="Priyanshu Kumar Gupta">
+        </div>
+    </section>
+<!-- Video Introduction Section -->
+<div class="container">
+    <div class="video-container">
+        <video id="intro-video" controls>
+            <source src="your-video.mp4" type="video/mp4">
+            Your browser does not support the video tag.
+        </video>
+    </div>
+    <div class="description" id="description">
+        <h1>Hi, I'm [Your Name]</h1>
+        <p>I am passionate about [Your Skills]. In this video, I will share my journey and what drives me in my work.</p>
+    </div>
+</div>
+    <section class="about" id="about">
+        <div class="about-image">
+            <img src="/newsletter.png.jpg" alt="Priyanshu Kumar Gupta">
+        </div>
+        <div class="about-text">
+            <h2>About <span>Me</span></h2>
+            <h3>Full Stack Developer!</h3>
+            <p>
+                I am an enthusiastic web designer with hands-on experience in creating captivating website designs through various academic and personal projects. My passion for web design drives me to stay updated with the latest design trends, and I thrive on leveraging my creativity to build visually appealing and user-friendly websites.
+
+Throughout my projects, I have gained a solid understanding of user experience (UX) and user interface (UI) principles. I have successfully collaborated with peers to develop engaging websites, ensuring a seamless experience for users. I am eager to apply my skills and creativity in a professional setting and contribute to innovative web design solutions.
+            </p>
+            <a href="#" class="btn">More About Me</a>
+        </div>
+    </section>
+
+    <section class="services" id="services">
+        <h2>My <span>Services</span></h2>
+        <div class="services-container">
+            <div class="service-box">
+                <div class="service-icon">⚙️</div>
+                <h3>UI/UX Design</h3>
+                <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Pariatur possimus voluptate.</p>
+                <a href="#" class="btn">learn more</a>
+            </div>
+            <div class="service-box">
+                <div class="service-icon">💻</div>
+                <h3>Web Design</h3>
+                <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Pariatur possimus voluptate.</p>
+                <a href="#" class="btn">learn more</a>
+            </div>
+            <div class="service-box">
+                <div class="service-icon">📱</div>''''
+                <h3>App Design</h3>
+                <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Pariatur possimus voluptate.</p>
+                <a href="#" class="btn">learn more</a>
+            </div>
+        </div>
+    </section>
+
+    <div class="skills-section">
+        <h2>Technical Skills</h2>
+        <div class="skill-bar">
+            <p>HTML</p>
+            <div class="progress">
+                <div class="progress-done" data-done="90"></div>
+            </div>
+        </div>
+    
+        <div class="skill-bar">
+            <p>CSS</p>
+            <div class="progress">
+                <div class="progress-done" data-done="60"></div>
+            </div>
+        </div>
+    
+        <div class="skill-bar">
+            <p>Javascript</p>
+            <div class="progress">
+                <div class="progress-done" data-done="85"></div>
+            </div>
+        </div>
+    
+        <div class="skill-bar">
+            <p>Python</p>
+            <div class="progress">
+                <div class="progress-done" data-done="50"></div>
+            </div>
+        </div>
+    
+        <div class="skill-bar">
+            <p>React</p>
+            <div class="progress">
+                <div class="progress-done" data-done="75"></div>
+            </div>
+        </div>
+    
+        <h2>Professional Skills</h2>
+        <div class="circular-skills">
+            <div class="circle" data-percent="90">
+                <div class="inner-circle">90%</div>
+                <p>Creativity</p>
+            </div>
+    
+            <div class="circle" data-percent="65">
+                <div class="inner-circle">65%</div>
+                <p>Communication</p>
+            </div>
+    
+            <div class="circle" data-percent="75">
+                <div class="inner-circle">75%</div>
+                <p>Problem Solving</p>
+            </div>
+    
+            <div class="circle" data-percent="85">
+                <div class="inner-circle">85%</div>
+                <p>Teamwork</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="projects-section">
+        <h2>Latest <span>Project</span></h2>
+        <div class="projects-container">
+            <div class="project-card">
+                <img src="https://media.geeksforgeeks.org/img-practice/prod/courses/345/Web/Content/javasc_1724254497.webp" alt="Project 1">
+            </div>
+            <div class="project-card">
+                <img src="https://media.geeksforgeeks.org/auth-dashboard-uploads/three90-rightbanner-20240708.png" alt="Project 2">
+            </div>
+            <div class="project-card">
+                <img src="https://media.geeksforgeeks.org/img-practice/prod/courses/241/Web/Content/FSRNL_1705410152.webp" alt="Project 3">
+            </div>
+        </div>
+    </div>
+    
+<!-- Contact Section -->
+    <section class="contact" id="contact">
+    <div class="contact-content">
+    <div class="contact-info">
+        <h2>Contact <span>Me</span></h2>
+        <p>Let's Work Together</p>
+        <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Dolorum nobis possimus tenetur quidem fugit?</p>
+        <p><strong>Email:</strong>priyanshukumargupta89@gmail.com</p>
+        <p><strong>Phone:</strong>+91 8340292848</p>
+        <div class="social-links">
+            <a href="#"><i class="fab fa-facebook-f"></i></a>
+            <a href="#"><i class="fab fa-twitter"></i></a>
+            <a href="https://www.instagram.com/luscifer_12?igsh=MWs1a2tpcTg3M2oyYw=="><i class="fab fa-instagram"></i></a>
+            <a href="#"><i class="fab fa-linkedin-in"></i></a>
+        </div>
+    </div>
+    <div class="contact-form">
+        <form id="contactForm" method="POST">
+            <input type="text" name="name" placeholder="Enter Your Name" required>
+            <input type="email" name="email" placeholder="Enter Your Email" required>
+            <input type="text" name="subject" placeholder="Enter Your Subject" required>
+            <textarea name="message" placeholder="Enter Your Message" required></textarea>
+            <button type="submit" class="btn">Submit</button>
+        </form>
+        <div id="formMessage"></div>
+    </div>
+</div>
+
+<style>
+#formMessage {
+    margin-top: 15px;
+    padding: 10px;
+    border-radius: 4px;
+    display: none;
+}
+
+#formMessage.success {
+    display: block;
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+#formMessage.error {
+    display: block;
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
+.contact-form form input:focus,
+.contact-form form textarea:focus {
+    outline: none;
+    border-color: #2ecc71;
+}
+</style>
+
+<script>
+document.getElementById('contactForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    // Show loading state
+    const submitButton = this.querySelector('button[type="submit"]');
+    const originalButtonText = submitButton.textContent;
+    submitButton.textContent = 'Sending...';
+    submitButton.disabled = true;
+
+    const messageDiv = document.getElementById('formMessage');
+    messageDiv.style.display = 'none';
+
+    const formData = new FormData(this);
+
+    fetch('process_contact.php', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        return response.json();
+    })
+    .then(data => {
+        messageDiv.textContent = data.message;
+        messageDiv.className = data.status;
+        messageDiv.style.display = 'block';
+        
+        if(data.status === 'success') {
+            this.reset();
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        messageDiv.textContent = 'An error occurred. Please try again.';
+        messageDiv.className = 'error';
+        messageDiv.style.display = 'block';
+    })
+    .finally(() => {
+        // Reset button state
+        submitButton.textContent = originalButtonText;
+        submitButton.disabled = false;
+    });
+});
+</script>
+        <!-- <div class="contact-content">
+            <div class="contact-info">
+                <h2>Contact <span>Me</span></h2>
+                <p>Let's Work Together</p>
+                <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Dolorum nobis possimus tenetur quidem fugit?</p>
+                <p><strong>Email:</strong>priyanshukumargupta89@gmail.com</p>
+                <p><strong>Phone:</strong>+91 8340292848</p>
+                <div class="social-links">
+                    <a href="#"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="https://www.instagram.com/luscifer_12?igsh=MWs1a2tpcTg3M2oyYw=="><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                </div>
+            </div>
+            <div class="contact-form">
+                <form action="#">
+                    <input type="text" placeholder="Enter Your Name" required>
+                    <input type="email" placeholder="Enter Your Email" required>
+                    <input type="text" placeholder="Enter Your Subject" required>
+                    <textarea placeholder="Enter Your Message" required></textarea>
+                    <button type="submit" class="btn">Submit</button>
+                </form>
+            </div>
+        </div> -->
+    </section>
+    
+    
+    
+    
+
+    <script src="script.js"></script>
+</body>
+</html>
